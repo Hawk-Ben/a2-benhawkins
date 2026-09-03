@@ -1,4 +1,23 @@
 // FRONT-END (CLIENT) JAVASCRIPT HERE
+const bricks = []
+
+const loadWall = async function() {
+  const response = await fetch( '/bricks' )
+  const bricks = await response.json()
+  const wall = document.querySelector( '#brickWall' )
+
+  bricks.forEach( function( brick ) {
+    const brickElement = document.createElement( 'article' )
+    const title = document.createElement( 'h2' )
+    const body = document.createElement( 'p' )
+
+    brickElement.className = 'brick'
+    title.textContent = brick.title
+    body.textContent = brick.body
+    brickElement.append( title, body )
+    wall.append( brickElement )
+  })
+}
 
 const submit = async function( event ) {
   // stop form submission from trying to load
@@ -7,12 +26,22 @@ const submit = async function( event ) {
   // remains to this day
   event.preventDefault()
   
-  const input = document.querySelector( '#yourname' ),
-        json = { yourname: input.value },
-        body = JSON.stringify( json )
+  const form = event.currentTarget
+  const formData = new FormData( form )
+
+  const brick = {
+    title: formData.get( 'title' ),
+    body: formData.get( 'body' )
+  }
+
+  bricks.push( brick )
+  console.log( 'bricks:', bricks )
+
+  const body = JSON.stringify( bricks )
 
   const response = await fetch( '/submit', {
     method:'POST',
+    headers: { 'Content-Type': 'application/json' },
     body 
   })
 
@@ -22,6 +51,13 @@ const submit = async function( event ) {
 }
 
 window.onload = function() {
-  const button = document.querySelector('button')
-  button.onclick = submit
+  const forms = document.querySelectorAll( 'form' )
+
+  forms.forEach( function( form ) {
+    form.addEventListener( 'submit', submit )
+  })
+
+  if( document.querySelector( '#brickWall' ) ) {
+    loadWall()
+  }
 }

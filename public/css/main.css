@@ -2,3 +2,21 @@ body {
   background:black;
   color:white;
 }
+
+form{
+  position: absolute;
+  top: 100px;
+  left: 200px;
+}
+
+#brickWall {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.brick {
+  border: 1px solid white;
+  padding: 1rem;
+}

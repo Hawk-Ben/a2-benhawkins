@@ -3,16 +3,20 @@
   <head>
     <title>CS4241 Assignment 2</title>
     <meta charset='utf-8' />
-    <script src='js/main.js'></script>
+    <script src='js/main.js' defer></script>
     <link rel='stylesheet' href='css/main.css' />
     
     <!-- get rid of favicon error -->
     <link rel='icon' href='data:;base64,iVBORw0KGgo=' />
   </head>
   <body>
-    <form>
-      <input type='text' id='yourname' value='your name here'>
+    <form id='brickForm'>
+      <input type='text' id='title' name='title' value='Title of Brick'>
+      <input type='text' id='body' name='body' value='Body of Brick'>
       <button>submit</button>
     </form>
+
+   <button type="button" onclick="window.location.href='wall.html'">See the wall</button>
   </body>
 </html>
+
