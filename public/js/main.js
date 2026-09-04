@@ -1,5 +1,19 @@
 // FRONT-END (CLIENT) JAVASCRIPT HERE
-const bricks = []
+const bricks = [ //For testing purposes
+    {
+        id: 1,
+        title: "First Brick",
+        body: "This is the first brick.",
+        parentId: null
+    },
+
+    {
+        id: 2,
+        title: "Second Brick",
+        body: "This is connected to the first brick.",
+        parentId: 1
+    }
+];
 let brickID = 0
 let selectedBrickID = -1
 
@@ -8,28 +22,34 @@ function displayBrick( brick ) {
 
   brickElement.dataset.id = brick.id
   brickElement.classList.add( 'brick' )
-  brickElement.innerHTML = `
-    <h2>${brick.title}</h2>
-    <p>${brick.body}</p>
-  `
+
+  const titleElement = document.createElement( 'h3' )
+  titleElement.textContent = brick.title
+
+  const bodyElement = document.createElement( 'p' )
+  bodyElement.textContent = brick.body
+
+  brickElement.appendChild( titleElement )
+  brickElement.appendChild( bodyElement )
 
   brickElement.addEventListener( 'click', function(event) {
     selectedBrickID = event.currentTarget.dataset.id
     console.log( 'selectedBrickID:', selectedBrickID )
+    console.log('Selected brick', brick)
   })
 
   document.getElementById("brickWall").appendChild( brickElement )
 }
+bricks.forEach(displayBrick)
 
-const loadWall = async function() {
-  const response = await fetch( '/bricks' )
-  const bricks = await response.json()
+function clearWall(){
   const wall = document.querySelector( '#brickWall' )
-
-  bricks.forEach( function( brick ) {
-    displayBrick( brick )
-  })
+  wall.innerHTML = ''
+  bricks = []
 }
+document.getElementById('clearWall').addEventListener('click', clearWall)
+
+
 
 function createBrick( title, body ) {
   let newBrick = {
@@ -57,6 +77,7 @@ const submit = async function( event ) {
   )
 
   bricks.push( brick )
+  displayBrick( brick )
   console.log( 'bricks:', bricks )
 
   const body = JSON.stringify( bricks )
