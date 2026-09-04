@@ -1,20 +1,6 @@
 // FRONT-END (CLIENT) JAVASCRIPT HERE
-const bricks = [ //For testing purposes
-    {
-        id: 1,
-        title: "First Brick",
-        body: "This is the first brick.",
-        parentId: null
-    },
-
-    {
-        id: 2,
-        title: "Second Brick",
-        body: "This is connected to the first brick.",
-        parentId: 1
-    }
-];
-let brickID = 0
+const bricks = []
+let brickID = 2
 let selectedBrickID = -1
 
 function displayBrick( brick ) {
@@ -32,20 +18,50 @@ function displayBrick( brick ) {
   brickElement.appendChild( titleElement )
   brickElement.appendChild( bodyElement )
 
-  brickElement.addEventListener( 'click', function(event) {
-    selectedBrickID = event.currentTarget.dataset.id
-    console.log( 'selectedBrickID:', selectedBrickID )
-    console.log('Selected brick', brick)
-  })
+  brickElement.addEventListener( 'click', brickClicked )
 
   document.getElementById("brickWall").appendChild( brickElement )
+  console.log( 'brickElement:', brickElement )
 }
-bricks.forEach(displayBrick)
 
-function clearWall(){
-  const wall = document.querySelector( '#brickWall' )
-  wall.innerHTML = ''
-  bricks = []
+async function loadBricks() {
+  const response = await fetch( '/bricks' )
+  const serverBricks = await response.json()
+
+  bricks.push( ...serverBricks )
+  serverBricks.forEach( displayBrick )
+}
+
+function brickClicked( event ){
+  const brickElement = event.currentTarget
+  selectedBrickID = brickElement.dataset.id
+  const selectedBrick = bricks.find( function( brick ) {
+    return String( brick.id ) === selectedBrickID
+  })
+
+  document.querySelectorAll( '.brick.selected' ).forEach( function( element ) {
+    element.classList.remove( 'selected' )
+  })
+  brickElement.classList.add( 'selected' )
+
+  console.log( 'selectedBrickID:', selectedBrickID )
+  console.log( 'Selected brick', selectedBrick )
+
+}
+
+async function clearWall(){
+  brickID = 0
+  selectedBrickID = -1
+
+  const response = await fetch( '/bricks', {
+    method: 'DELETE'
+  })
+
+  if( response.ok ) {
+    const wall = document.querySelector( '#brickWall' )
+    wall.innerHTML = ''
+    bricks.length = 0
+  }
 }
 document.getElementById('clearWall').addEventListener('click', clearWall)
 
@@ -56,8 +72,9 @@ function createBrick( title, body ) {
     id: brickID++,
     title: title,
     body: body,
-    parentID: -1
+    parentID: selectedBrickID
   }
+  console.log( 'newBrick:', newBrick )
   return newBrick
 }
 
@@ -78,11 +95,11 @@ const submit = async function( event ) {
 
   bricks.push( brick )
   displayBrick( brick )
-  console.log( 'bricks:', bricks )
+  //console.log( 'bricks:', bricks )
 
-  const body = JSON.stringify( bricks )
+  const body = JSON.stringify( brick )
 
-  const response = await fetch( '/submit', {
+  const response = await fetch( '/bricks', {
     method:'POST',
     headers: { 'Content-Type': 'application/json' },
     body 
@@ -94,13 +111,12 @@ const submit = async function( event ) {
 }
 
 window.onload = function() {
+  loadBricks()
+
   const forms = document.querySelectorAll( 'form' )
 
   forms.forEach( function( form ) {
     form.addEventListener( 'submit', submit )
   })
 
-  if( document.querySelector( '#brickWall' ) ) {
-    loadWall()
-  }
 }

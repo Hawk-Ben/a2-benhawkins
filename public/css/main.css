@@ -14,9 +14,15 @@ form{
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
   padding: 1rem;
+  margin-top: 140px;
 }
 
 .brick {
   border: 1px solid white;
   padding: 1rem;
+  cursor: pointer;
+}
+
+.brick.selected {
+  border: 3px solid yellow;
 }

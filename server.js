@@ -7,13 +7,29 @@ const http = require( 'http' ),
       dir  = 'public/',
       port = 3000
 
-let bricks = []
+let bricks = [//For testing purposes
+    {
+        id: 0,
+        title: "First Brick",
+        body: "This is the first brick.",
+        parentId: -1
+    },
+
+    {
+        id: 1,
+        title: "Second Brick",
+        body: "This is connected to the first brick.",
+        parentId: 0
+    }
+]
 
 const server = http.createServer( function( request,response ) {
   if( request.method === 'GET' ) {
     handleGet( request, response )    
   }else if( request.method === 'POST' ){
     handlePost( request, response ) 
+  }else if( request.method === 'DELETE' ){
+    handleDelete( request, response )
   }
 })
 
@@ -41,15 +57,21 @@ const handlePost = function( request, response ) {
   })
 
   request.on( 'end', function() {
-    bricks = JSON.parse( dataString )
+    const brick = JSON.parse( dataString )
+    bricks.push( brick )
 
-    console.log( 'bricks:', bricks )
-    // ... do something with the data here!!!
+    response.writeHead( 200, "OK", {'Content-Type': 'application/json' })
 
-    response.writeHead( 200, "OK", {'Content-Type': 'text/plain' })
-
-    response.end( JSON.stringify( bricks ) )
+    response.end( JSON.stringify( brick ) )
   })
+}
+
+const handleDelete = function( request, response ) {
+  if( request.url === '/bricks' ) {
+    bricks.length = 0
+    response.writeHead( 200, { 'Content-Type': 'application/json' })
+    response.end( JSON.stringify( bricks ) )
+  }
 }
 
 const sendFile = function( response, filename ) {
