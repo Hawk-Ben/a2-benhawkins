@@ -1,5 +1,25 @@
 // FRONT-END (CLIENT) JAVASCRIPT HERE
 const bricks = []
+let brickID = 0
+let selectedBrickID = -1
+
+function displayBrick( brick ) {
+  const brickElement = document.createElement( 'div' )
+
+  brickElement.dataset.id = brick.id
+  brickElement.classList.add( 'brick' )
+  brickElement.innerHTML = `
+    <h2>${brick.title}</h2>
+    <p>${brick.body}</p>
+  `
+
+  brickElement.addEventListener( 'click', function(event) {
+    selectedBrickID = event.currentTarget.dataset.id
+    console.log( 'selectedBrickID:', selectedBrickID )
+  })
+
+  document.getElementById("brickWall").appendChild( brickElement )
+}
 
 const loadWall = async function() {
   const response = await fetch( '/bricks' )
@@ -7,16 +27,18 @@ const loadWall = async function() {
   const wall = document.querySelector( '#brickWall' )
 
   bricks.forEach( function( brick ) {
-    const brickElement = document.createElement( 'article' )
-    const title = document.createElement( 'h2' )
-    const body = document.createElement( 'p' )
-
-    brickElement.className = 'brick'
-    title.textContent = brick.title
-    body.textContent = brick.body
-    brickElement.append( title, body )
-    wall.append( brickElement )
+    displayBrick( brick )
   })
+}
+
+function createBrick( title, body ) {
+  let newBrick = {
+    id: brickID++,
+    title: title,
+    body: body,
+    parentID: -1
+  }
+  return newBrick
 }
 
 const submit = async function( event ) {
@@ -29,10 +51,10 @@ const submit = async function( event ) {
   const form = event.currentTarget
   const formData = new FormData( form )
 
-  const brick = {
-    title: formData.get( 'title' ),
-    body: formData.get( 'body' )
-  }
+  const brick = createBrick(
+    formData.get( 'title' ),
+    formData.get( 'body' )
+  )
 
   bricks.push( brick )
   console.log( 'bricks:', bricks )
