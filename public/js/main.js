@@ -21,6 +21,12 @@ function displayBrick( brick ) {
   brickElement.addEventListener( 'click', brickClicked )
 
   document.getElementById("brickWall").appendChild( brickElement )
+  if (brick.parentID !== -1) {
+    parentBrick = bricks.find(parentBrick => Number(parentBrick.id) == brick.parentID)
+    parentBrickElement = document.querySelector(`.brick[data-id='${parentBrick.id}']`)
+    drawLine( brickElement, parentBrickElement )
+  }
+
   console.log( 'brickElement:', brickElement )
 }
 
@@ -49,9 +55,36 @@ function brickClicked( event ){
 
 }
 
+function drawLine(brick1, brick2) {
+  console.log('Drawing line between', brick1, 'and', brick2)
+  const svg = document.getElementById('connection')
+
+  const rect1 = brick1.getBoundingClientRect()
+  const rect2 = brick2.getBoundingClientRect()
+
+  const x1 = rect1.left + rect1.width / 2
+  const y1 = rect1.top + rect1.height / 2
+  const x2 = rect2.left + rect2.width / 2
+  const y2 = rect2.top + rect2.height / 2
+
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+
+  line.setAttribute('x1', x1)
+  line.setAttribute('y1', y1)
+  line.setAttribute('x2', x2)
+  line.setAttribute('y2', y2)
+  line.setAttribute('stroke', 'white')
+  line.setAttribute('stroke-width', '3')
+
+  svg.appendChild(line)
+}
+
 async function clearWall(){
   brickID = 0
   selectedBrickID = -1
+
+  const svg = document.getElementById('connection')
+  svg.innerHTML = ''
 
   const response = await fetch( '/bricks', {
     method: 'DELETE'
