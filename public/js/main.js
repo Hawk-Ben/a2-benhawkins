@@ -1,6 +1,6 @@
 // FRONT-END (CLIENT) JAVASCRIPT HERE
 const bricks = []
-let brickID = 2
+let brickID = 0
 let selectedBrickID = -1
 
 function displayBrick( brick ) {
@@ -20,7 +20,12 @@ function displayBrick( brick ) {
 
   brickElement.addEventListener( 'click', brickClicked )
 
-  document.getElementById("brickWall").appendChild( brickElement )
+  const wall = document.getElementById("brickWall")
+  if (!wall) {
+    return
+  }
+
+  wall.appendChild( brickElement )
   if (brick.parentID !== -1) {
     parentBrick = bricks.find(parentBrick => Number(parentBrick.id) == brick.parentID)
     parentBrickElement = document.querySelector(`.brick[data-id='${parentBrick.id}']`)
@@ -58,25 +63,35 @@ function brickClicked( event ){
 function drawLine(brick1, brick2) {
   console.log('Drawing line between', brick1, 'and', brick2)
   const svg = document.getElementById('connection')
+  const wall = document.getElementById('brickWall')
 
   const rect1 = brick1.getBoundingClientRect()
   const rect2 = brick2.getBoundingClientRect()
+  const wallRect = wall.getBoundingClientRect()
 
-  const x1 = rect1.left + rect1.width / 2
-  const y1 = rect1.top + rect1.height / 2
-  const x2 = rect2.left + rect2.width / 2
-  const y2 = rect2.top + rect2.height / 2
+  const x1 = rect1.left - wallRect.left + rect1.width / 2
+  const y1 = rect1.top - wallRect.top / 2 + rect1.height
+  const x2 = rect2.left - wallRect.left + rect2.width / 2
+  const y2 = rect2.top - wallRect.top / 2 + rect2.height
 
-  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+  console.log('Coordinates:', x1, y1, x2, y2)
 
-  line.setAttribute('x1', x1)
-  line.setAttribute('y1', y1)
-  line.setAttribute('x2', x2)
-  line.setAttribute('y2', y2)
-  line.setAttribute('stroke', 'white')
-  line.setAttribute('stroke-width', '3')
+  const midX = (x1 + x2) / 2
+  const midY = (y1 + y2) / 2
 
-  svg.appendChild(line)
+  const curveAmount = -100 * (x2-x1)/rect1.width  // Adjust this value to control the curve amount
+
+  const controlX = midX
+  const controlY = midY + curveAmount
+
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+
+  path.setAttribute('d', `M ${x1} ${y1} Q ${controlX} ${controlY} ${x2} ${y2}`)
+  path.setAttribute('stroke', 'white')
+  path.setAttribute('fill', 'transparent')
+  path.setAttribute('stroke-width', '3')
+
+  svg.appendChild(path)
 }
 
 async function clearWall(){
@@ -96,7 +111,11 @@ async function clearWall(){
     bricks.length = 0
   }
 }
-document.getElementById('clearWall').addEventListener('click', clearWall)
+
+const clearWallButton = document.getElementById('clearWall')
+if (clearWallButton) {
+  clearWallButton.addEventListener('click', clearWall)
+}
 
 
 
@@ -120,6 +139,7 @@ const submit = async function( event ) {
   
   const form = event.currentTarget
   const formData = new FormData( form )
+  brickID = bricks.length
 
   const brick = createBrick(
     formData.get( 'title' ),
@@ -141,6 +161,10 @@ const submit = async function( event ) {
   const text = await response.text()
 
   console.log( 'text:', text )
+
+  if (form.id === 'firstBrickForm') {
+    window.location.href = 'wall.html'
+  }
 }
 
 window.onload = function() {

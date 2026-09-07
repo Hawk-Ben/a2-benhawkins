@@ -10,14 +10,28 @@
     <link rel='icon' href='data:;base64,iVBORw0KGgo=' />
   </head>
   <body>
-    <button type="button" onclick="window.location.href='index.html'">Back to home</button>
-    <button id='clearWall'>Clear Wall</button>
-    <form id='childBrickForm'>
-      <input type='text' id='title' name='title' value='Title of Brick'>
-      <input type='text' id='body' name='body' value='Body of Brick'>
-      <button>submit</button>
-    </form>
+    <div class="wallHeader">
+    <button class="PageSwitch" type="button" onclick="window.location.href='index.html'">Back to home</button>
+    <button type="button" id='clearWall'>Clear Wall</button>
+
+    <p class="header">Click on a brick then lay a new brick to connect them</p>
+
+    </div>
     <div id="brickWall"></div>
+    <div class="underWall">
+      <form id='childBrickForm'>
+      <input type="text" id="childBrickTitle" name="title" placeholder="Title of your brick..." required>
+
+      <textarea
+        id="childBrickBody"
+        name="body"
+        placeholder="What will you write on the wall..."
+        required
+      ></textarea>
+
+      <button type="submit" id="childBrickButton">Lay your brick</button>
+    </form>
+    </div>
     <svg id="connection"></svg>
 
   </body>

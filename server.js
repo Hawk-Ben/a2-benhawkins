@@ -7,21 +7,7 @@ const http = require( 'http' ),
       dir  = 'public/',
       port = 3000
 
-let bricks = [//For testing purposes
-    {
-        id: 0,
-        title: "First Brick",
-        body: "This is the first brick.",
-        parentId: -1
-    },
-
-    {
-        id: 1,
-        title: "Second Brick",
-        body: "This is connected to the first brick.",
-        parentId: 0
-    }
-]
+let bricks = []
 
 const server = http.createServer( function( request,response ) {
   if( request.method === 'GET' ) {
