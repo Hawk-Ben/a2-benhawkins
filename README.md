@@ -94,7 +94,8 @@ Sample Readme (delete the above when you're ready to submit, and modify the belo
 Include a very brief summary of your project here. Be sure to include the CSS positioning technique you used, and any required instructions to use your application.
 
 ## Technical Achievements
-- **Tech Achievement 1**: Using a combination of...
+- **Tech Achievement 1**: Created a form that users can store and pull data from in the form of "bricks"
+- **Tech Achievement 2**: Created a selction that connects two bricks with a line when created and adds a "parent" brick
 
 ### Design/Evaluation Achievements
-- **Design Achievement 1**: 
+- **Design Achievement 1**: Created a function that draws a line between bricks when there is a parent at creation
